@@ -36,7 +36,7 @@
                             echo "<p>$error_message</p>";
                         }
                     ?>
-                    <form method="post" action="new.php">
+                    <form method="post">
                         <label for="title"> Title</label>
                         <input id="title" type="text" name="title"><br>
                         <label for="date">Date</label>

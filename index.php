@@ -2,12 +2,20 @@
 
     include "inc/functions.php";
 
+    if(isset($_GET['msg'])) {
+        $error_message = trim(filter_input(INPUT_GET, 'msg', FILTER_SANITIZE_STRING));
+    }
+
     include "inc/header.php";?>
 
         <section>
             <div class="container">
+                    <?php 
+                        if(isset($error_message)) {
+                            echo "<p>$error_message</p>";
+                        }
+                    ?>
                 <div class="entry-list">
-
                     <?php 
                         foreach(get_all_entries() as $entry) {
                             echo "<article>";

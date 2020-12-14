@@ -28,7 +28,6 @@
                 $error_message = "Could not add project";
             }
         }
-
     }
 
     include "inc/header.php";?>
@@ -42,7 +41,7 @@
                             echo "<p>$error_message</p>";
                         }
                     ?>
-                    <form method="post" action="detail.php?id= <?php echo $id ?>">
+                    <form method="post">
                         <label for="title"> Title</label>
                         <input id="title" type="text" name="title" value="<?php echo $entry['title'] ?>"><br>
                         <label for="date">Date</label>

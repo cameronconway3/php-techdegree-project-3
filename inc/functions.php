@@ -22,9 +22,10 @@ function get_one_entry($id) {
 
     try {
         $results = $db->prepare($sql);
-        $results->bindValue(1, $id, PDO::PARAM_STR);
+        $results->bindValue(1, $id, PDO::PARAM_INT);
         $results->execute();
     } catch (Exception $e) {
+        echo "Error Message - " . $e->getMessage() . "</br>";
         return false;
     }
     
@@ -51,32 +52,29 @@ function add_entry($title, $date, $time_spent, $what_i_learned, $resources_to_re
         $results->bindValue(4, $what_i_learned, PDO::PARAM_STR);
         $results->bindValue(5, $resources_to_remember, PDO::PARAM_STR);
         if($id) {
-            $results->bindValue(6, $id, PDO::PARAM_STR);
+            $results->bindValue(6, $id, PDO::PARAM_INT);
         }
         $results->execute();
     } catch (Exception $e) {
+        echo "Error Message - " . $e->getMessage() . "</br>";
         return false;
     }
     return true;
 }
 
-// Edit a journal entry
-// function edit_entry($id) {
-//     include "connection.php";
-
-//     $sql = 'UPDATE entries SET title = ?, date = ?, time_spent = ?, learned = ?, resources = ? WHERE id = ?';
-
-//     try {
-
-//     } catch (Exception $e) {
-//         return false;
-//     }
-//     return true;
-
-// }
-
 // Delete a journal entry
 function delete_entry($id) {
     include "connection.php";
 
+    $sql = 'DELETE FROM entries WHERE id = ?';
+
+    try {
+        $results = $db->prepare($sql);
+        $results->bindValue(1, $id, PDO::PARAM_INT);
+        $results->execute();
+    } catch(Exception $e) {
+        echo "Error Message - " . $e->getMessage() . "</br>";
+        return false;
+    }
+    return true;
 }

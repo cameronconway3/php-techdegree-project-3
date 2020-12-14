@@ -12,6 +12,16 @@
         exit;
     }
 
+    if(isset($_POST['delete'])) {
+        if(delete_entry(filter_input(INPUT_POST, 'delete', FILTER_SANITIZE_NUMBER_INT))) {
+            header('Location: index.php?msg=Task+Deleted');
+            exit;
+        } else {
+            header('Location: index.php?msg=Unable+to+Delete+Task');
+            exit;
+        }
+    }
+
     include "inc/header.php";?>
 
         <section>
@@ -43,6 +53,12 @@
             </div>
             <div class="edit">
                 <p><a href="edit.php?id=<?php echo $id ?>">Edit Entry</a></p>
+            </div>
+            <div class="delete">
+                <form method="post">
+                    <input type="hidden" value="<?php echo $id ?>" name="delete">
+                    <input type="submit" value="Delete">
+                </form>
             </div>
         </section>
 
