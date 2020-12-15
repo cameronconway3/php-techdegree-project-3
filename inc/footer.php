@@ -1,6 +1,6 @@
         <footer>
             <div>
-                &copy; MyJournal
+                &copy; CameronConwayJournal
             </div>
         </footer>
     </body>

@@ -2,6 +2,7 @@
 
     include "inc/functions.php";
 
+    // If 'msg' is set, sanitize and filter ready for display
     if(isset($_GET['msg'])) {
         $error_message = trim(filter_input(INPUT_GET, 'msg', FILTER_SANITIZE_STRING));
     }
@@ -12,35 +13,27 @@
             <div class="container">
                     <?php 
                         if(isset($error_message)) {
+                            echo "<div class='index-error-message'>";
                             echo "<p>$error_message</p>";
+                            echo "</div>";
                         }
                     ?>
-                <div class="entry-list">
+                <div class="entry-list index-entries">
                     <?php 
                         foreach(get_all_entries() as $entry) {
+
+                            // Format Date
+                            $formattedDate = date('F j, Y', strtotime($entry['date']));
+
                             echo "<article>";
-                            echo "<h2><a href='detail.php?id=" . $entry['id'] . "'>" . $entry['title'] . "</a></h2>";
-                            echo "<time datetime='" . $entry['date'] . "'>" . $entry['date'] . "</time>";
+                            echo "<h2><a class='index-title' href='detail.php?id=" . $entry['id'] . "'>" . $entry['title'] . "</a></h2>";
+                            // If date is not defined, don't include the time element
+                            if(!empty($entry['date'])) {
+                                echo "<time class='index-time' datetime='" . $entry['date'] . "'>" . $formattedDate . "</time>";
+                            }
                             echo "</article>";
                         }
                     ?>
-
-                    <!-- <article>
-                        <h2><a href="detail.html">The best day I’ve ever had</a></h2>
-                        <time datetime="2016-01-31">January 31, 2016</time>
-                    </article>
-                    <article>
-                        <h2><a href="detail_2.html">The absolute worst day I’ve ever had</a></h2>
-                        <time datetime="2016-01-31">January 31, 2016</time>
-                    </article>
-                    <article>
-                        <h2><a href="detail_3.html">That time at the mall</a></h2>
-                        <time datetime="2016-01-31">January 31, 2016</time>
-                    </article>
-                    <article>
-                        <h2><a href="detail_4.html">Dude, where’s my car?</a></h2>
-                        <time datetime="2016-01-31">January 31, 2016</time>
-                    </article> -->
                 </div>
             </div>
         </section>

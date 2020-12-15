@@ -12,8 +12,8 @@
         $resources_to_remember = trim(filter_input(INPUT_POST,"resourcesToRemember",FILTER_SANITIZE_STRING));
 
         // If any of the fields are empty, add the error message
-        if(empty($title) || empty($date) || empty($time_spent) || empty($what_i_learned) || empty($resources_to_remember)) {
-            $error_message = "Please fill in the required fields: Title, Date, Time Spent, What I Learned, and Resources to Remember.";
+        if(empty($title) || empty($time_spent) || empty($what_i_learned)) {
+            $error_message = "Please fill in the required fields: Title, Time Spent, and What I Learned.";
         } else {
             // If 'add_entry' returns true, direct the user to 'index.php', else, update the error message
             if(add_entry($title, $date, $time_spent, $what_i_learned, $resources_to_remember)) {
@@ -33,7 +33,9 @@
                     <h2>New Entry</h2>
                     <?php 
                         if(isset($error_message)) {
+                            echo "<div class='form-error-message'>";
                             echo "<p>$error_message</p>";
+                            echo "</div>";
                         }
                     ?>
                     <form method="post">

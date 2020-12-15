@@ -2,11 +2,15 @@
 
     include "inc/functions.php";
 
+    // If the id variable is defined
     if(isset($_GET["id"])) {
+        // Sanitize and Filter the id value
         $id = filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+        // Get the entry that relates to the ID value
         $entry = get_one_entry($id);
     }
 
+    // If there is a POST request made
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Sanitize and filter input
@@ -38,7 +42,9 @@
                     <h2>Edit Entry</h2>
                     <?php 
                         if(isset($error_message)) {
+                            echo "<div class='form-error-message'>";
                             echo "<p>$error_message</p>";
+                            echo "</div>";
                         }
                     ?>
                     <form method="post">
@@ -53,7 +59,7 @@
                         <label for="resources-to-remember">Resources to Remember</label>
                         <textarea id="resources-to-remember" rows="5" name="resourcesToRemember"><?php echo $entry['resources'] ?></textarea>
                         <input type="submit" value="Publish Entry" class="button">
-                        <a href="#" class="button button-secondary">Cancel</a>
+                        <a href="detail.php?id=<?php echo $id ?>" class="button button-secondary">Cancel</a>
                     </form>
                 </div>
             </div>

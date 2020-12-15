@@ -31,7 +31,9 @@ header .button {
 footer {
 	text-align: center;
 	padding: 35px 0;
-	border-top: 2px dotted #678f89;
+	/* border-top: 2px dotted #678f89; */
+	background-color: #678f89;
+	color: white;
 }
 
 
@@ -146,6 +148,8 @@ ul li a {
 .edit-entry h2,
 .new-entry h2 {
 	margin-bottom: 35px;
+	text-transform: uppercase;
+	color: #678f89;
 }
 .entry-list article {
 	margin-bottom: 70px;
@@ -154,8 +158,16 @@ ul li a {
 .entry-list article:last-child {
 	margin-bottom: 0;
 }
+.entry-list article h1 {
+	margin-bottom: 8px;
+	color: #678f89;
+	font-style: italic;
+}
 .entry-list article h2 {
 	margin-bottom: 8px;
+}
+.entry-list .detail-time {
+	color: black;
 }
 .entry-list.single {
 	padding-bottom: 70px;
@@ -176,12 +188,57 @@ ul li a {
 	text-align: center;
 	margin: 0 auto;
 }
+
+.edit .edit-button {
+	display:inline-block;
+	margin-right:10px;
+}
+.edit form {
+	display:inline-block;
+}
 .edit a {
 	font-weight: 400;
 	text-transform: uppercase;
 	font-size: 18px;
+	border: none;
+	text-decoration: underline;
+}
+.edit a:hover {
+	text-decoration: none;
+}
+.edit .delete-button {
+	border: none;
+	background-color: white;
+	font-weight: 400;
+	text-transform: uppercase;
+	font-size: 18px;
+	color: #678f89;
+	text-decoration: underline;
+}
+.edit .delete-button:hover {
+	text-decoration: none;
+}
+.index-error-message {
+	text-align: center;
+	text-transform: uppercase;
 }
 
+.index-error-message p {
+	font-size: 28px;
+}
+.index-entries article {
+	background-color: #678f89;
+	padding: 20px;
+	border-radius: 20px;
+}
+.index-title {
+	color: white;
+	font-style: italic;
+}
+.index-time {
+	color: white;
+	opacity: 0.8;
+}
 
 
 /* ==========================================================================
@@ -223,6 +280,14 @@ form textarea:hover {
 }
 input[type=submit] {
 	margin-right: 5px;
+}
+.form-error-message {
+	background-color: red;
+	border-radius: 25px;
+}
+.form-error-message p {
+	color: white;
+	padding: 10px 20px 10px 20px;
 }
 
 
