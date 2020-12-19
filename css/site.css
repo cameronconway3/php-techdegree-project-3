@@ -239,6 +239,52 @@ ul li a {
 	color: white;
 	opacity: 0.8;
 }
+/* Add Tags */
+.tags-list {
+	color: white;
+}
+.tags-list a {
+	color: white;
+	text-decoration: underline;
+}
+.add-tags-form {
+	/* border: 1px solid red; */
+	text-align: center;
+	margin-top: 10px;
+}
+.add-tags-form .input-tags {
+	width: 30%;
+	height: 10px;
+	margin: 0px;
+}
+.add-tags-form .submit-tags {
+	/* height: 33px; */
+	margin-left: 10px;
+}
+
+.tag-title {
+	text-align: center;
+}
+.tag-error-message {
+	text-align: center;
+}
+.tag-entries {
+	margin-bottom: 70px;
+}
+.tag-entries article {
+	background-color: #678f89;
+	padding: 20px;
+	border-radius: 20px;
+}
+.tag-title {
+	color: white;
+	font-style: italic;
+}
+.tag-time {
+	color: white;
+	opacity: 0.8;
+}
+
 
 
 /* ==========================================================================

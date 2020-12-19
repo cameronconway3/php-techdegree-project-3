@@ -5,7 +5,7 @@ function get_all_entries() {
     include "connection.php";
 
     try {
-        return $db->query('SELECT id, title, date FROM entries ORDER BY date DESC');
+        return $db->query('SELECT entry_id, title, date FROM entries ORDER BY date DESC');
     } catch(Exception $e) {
         echo "Error Message - " . $e->getMessage() . "</br>";
         return false;
@@ -18,7 +18,7 @@ function get_all_entries() {
 function get_one_entry($id) {
     include "connection.php";
 
-    $sql = 'SELECT title, date, time_spent, learned, resources FROM entries WHERE id = ?';
+    $sql = 'SELECT title, date, time_spent, learned, resources FROM entries WHERE entry_id = ?';
 
     try {
         $results = $db->prepare($sql);
@@ -39,7 +39,7 @@ function add_entry($title, $date, $time_spent, $what_i_learned, $resources_to_re
     include "connection.php";
 
     if($id) {
-        $sql = 'UPDATE entries SET title = ?, date = ?, time_spent = ?, learned = ?, resources = ? WHERE id = ?';
+        $sql = 'UPDATE entries SET title = ?, date = ?, time_spent = ?, learned = ?, resources = ? WHERE entry_id = ?';
     } else {
         $sql = 'INSERT INTO entries(title, date, time_spent, learned, resources) VALUES(?, ?, ?, ?, ?)';
     }
@@ -66,7 +66,7 @@ function add_entry($title, $date, $time_spent, $what_i_learned, $resources_to_re
 function delete_entry($id) {
     include "connection.php";
 
-    $sql = 'DELETE FROM entries WHERE id = ?';
+    $sql = 'DELETE FROM entries WHERE entry_id = ?';
 
     try {
         $results = $db->prepare($sql);
@@ -78,3 +78,117 @@ function delete_entry($id) {
     }
     return true;
 }
+
+// Add tag to entry
+function add_tag($tag) {
+    include "connection.php";
+
+    // Add new tag to database
+    $sqlInsert = 'INSERT INTO tags(tag_name) VALUES(?)';
+
+    try {
+        $tagInsertResult = $db->prepare($sqlInsert);
+        $tagInsertResult->bindValue(1, $tag, PDO::PARAM_STR);
+        $tagInsertResult->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+
+    // Select the previously added tag
+    $sqlGet = 'SELECT tag_id FROM tags WHERE tag_name = ?';
+
+    try {
+        $tagGetResults = $db->prepare($sqlGet);
+        $tagGetResults->bindValue(1, $tag, PDO::PARAM_STR);
+        $tagGetResults->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+
+    $tagFetch = $tagGetResults->fetch(PDO::FETCH_ASSOC);
+
+    return $tagFetch['tag_id'];
+}
+
+// Add entry_id and tag_id to entries_tags table
+function add_entries_tags($entry_id, $tag_id) {
+    include "connection.php";
+
+    $sql = 'INSERT INTO entries_tags(entry_id, tag_id) VALUES(?, ?)';
+
+    try {
+        $results = $db->prepare($sql);
+        $results->bindValue(1, $entry_id, PDO::PARAM_INT);
+        $results->bindValue(2, $tag_id, PDO::PARAM_INT);
+        $results->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+    return true;
+}
+
+// Join entries and tags table using the entries_tag table and return the tag_names
+function get_entry_tags($entry_id) {
+    include "connection.php";
+    
+    $sql = '
+        SELECT tag_name FROM entries
+        INNER JOIN entries_tags ON entries.entry_id = entries_tags.entry_id
+        INNER JOIN tags ON entries_tags.tag_id = tags.tag_id
+        WHERE entries.entry_id = ?
+    ';
+
+    try {
+        $results = $db->prepare($sql);
+        $results->bindValue(1, $entry_id, PDO::PARAM_INT);
+        $results->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+
+    $joinResults = $results->fetchAll();
+
+    return $joinResults;
+}
+
+function get_entries_by_tag_name($tag_name) {
+    include "connection.php";
+
+    $sql = '
+        SELECT * FROM entries
+        INNER JOIN entries_tags ON entries.entry_id = entries_tags.entry_id
+        INNER JOIN tags ON entries_tags.tag_id = tags.tag_id
+        WHERE tags.tag_name = ?
+        ORDER BY date DESC
+    ';
+
+    try {
+        $results = $db->prepare($sql);
+        $results->bindValue(1, $tag_name, PDO::PARAM_STR);
+        $results->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+
+    $joinResults = $results->fetchAll();
+
+    return $joinResults;
+}
+
+// function get_tags_by_entry_id($entry_id) {
+
+//     include "connection.php";
+
+//     $sql = '
+//         SELECT * FROM entries
+//         INNER JOIN entries_tags ON entries.entry_id = entries_tags.entry_id
+//         INNER JOIN tags ON entries_tags.tag_id = tags.tag_id
+//         WHERE tags.tag_name = ?
+//         ORDER BY date DESC
+//     ';
+
+
+//     echo "<pre>" . var_dump($entry) . "</pre>";
+// }
+
+
