@@ -80,50 +80,91 @@ function delete_entry($id) {
 }
 
 // Add tag to entry
-function add_tag($tag) {
+function add_tags($tags, $entry_id) {
     include "connection.php";
 
-    // Add new tag to database
-    $sqlInsert = 'INSERT INTO tags(tag_name) VALUES(?)';
+    $tagsArray = explode(",", $tags);
+
+    // Delete all tags associated with the entry
+    $cleanUpSql = '
+        SELECT tag_id 
+        FROM entries_tags
+        WHERE entry_id = ?
+    ';
 
     try {
-        $tagInsertResult = $db->prepare($sqlInsert);
-        $tagInsertResult->bindValue(1, $tag, PDO::PARAM_STR);
-        $tagInsertResult->execute();
+        $cleanUpResluts = $db->prepare($cleanUpSql);
+        $cleanUpResluts->bindValue(1, $entry_id, PDO::PARAM_INT);
+        $cleanUpResluts->execute();
     } catch (Exception $e) {
         return false;
     }
 
-    // Select the previously added tag
-    $sqlGet = 'SELECT tag_id FROM tags WHERE tag_name = ?';
+    $idsToDelete = $cleanUpResluts->fetchAll();
 
-    try {
-        $tagGetResults = $db->prepare($sqlGet);
-        $tagGetResults->bindValue(1, $tag, PDO::PARAM_STR);
-        $tagGetResults->execute();
-    } catch (Exception $e) {
-        return false;
+    // For each element returned from SELECT above, DELETE the tag with that ID from tags and entries_tags table
+    // Remove the chance of there being any duplicates
+    foreach($idsToDelete as $delete_id) {
+
+        $deleteTagsSql = '
+            DELETE
+            FROM tags
+            WHERE tag_id = ?
+        ';
+
+        try {
+            $deleteTagsResluts = $db->prepare($deleteTagsSql);
+            $deleteTagsResluts->bindValue(1, $delete_id['tag_id'], PDO::PARAM_INT);
+            $deleteTagsResluts->execute();
+        } catch (Exception $e) {
+            return false;
+        }
+
+        $deleteEntriesTagsSql = '
+            DELETE
+            FROM entries_tags
+            WHERE tag_id = ?
+        ';
+        try {
+            $deleteEntriesTagsResluts = $db->prepare($deleteEntriesTagsSql);
+            $deleteEntriesTagsResluts->bindValue(1, $delete_id['tag_id'], PDO::PARAM_INT);
+            $deleteEntriesTagsResluts->execute();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
-    $tagFetch = $tagGetResults->fetch(PDO::FETCH_ASSOC);
+    // For each value in $tagsArray add it to database
+    foreach($tagsArray as $tag) {
+        $tag = trim($tag);
 
-    return $tagFetch['tag_id'];
-}
+        // Add new tag to database
+        $sqlInsert = 'INSERT INTO tags(tag_name) VALUES(?)';
+    
+        try {
+            $tagInsertResult = $db->prepare($sqlInsert);
+            $tagInsertResult->bindValue(1, $tag, PDO::PARAM_STR);
+            $tagInsertResult->execute();
+        } catch (Exception $e) {
+            return false;
+        }
 
-// Add entry_id and tag_id to entries_tags table
-function add_entries_tags($entry_id, $tag_id) {
-    include "connection.php";
+        // Get the tag ID of the inserted tag
+        $tag_id = $db->lastInsertId();
 
-    $sql = 'INSERT INTO entries_tags(entry_id, tag_id) VALUES(?, ?)';
+        // Add tag to 'entries_tags'
+        $sql = 'INSERT INTO entries_tags(entry_id, tag_id) VALUES(?, ?)';
 
-    try {
-        $results = $db->prepare($sql);
-        $results->bindValue(1, $entry_id, PDO::PARAM_INT);
-        $results->bindValue(2, $tag_id, PDO::PARAM_INT);
-        $results->execute();
-    } catch (Exception $e) {
-        return false;
+        try {
+            $results = $db->prepare($sql);
+            $results->bindValue(1, $entry_id, PDO::PARAM_INT);
+            $results->bindValue(2, $tag_id, PDO::PARAM_INT);
+            $results->execute();
+        } catch (Exception $e) {
+            return false;
+        }
     }
+
     return true;
 }
 
@@ -175,20 +216,5 @@ function get_entries_by_tag_name($tag_name) {
     return $joinResults;
 }
 
-// function get_tags_by_entry_id($entry_id) {
-
-//     include "connection.php";
-
-//     $sql = '
-//         SELECT * FROM entries
-//         INNER JOIN entries_tags ON entries.entry_id = entries_tags.entry_id
-//         INNER JOIN tags ON entries_tags.tag_id = tags.tag_id
-//         WHERE tags.tag_name = ?
-//         ORDER BY date DESC
-//     ';
-
-
-//     echo "<pre>" . var_dump($entry) . "</pre>";
-// }
 
 

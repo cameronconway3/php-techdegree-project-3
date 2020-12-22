@@ -8,7 +8,21 @@
 
         // If entries are returned assign them to the variable $entries, else add an error message
         if(get_entries_by_tag_name($tag)) {
-            $entries = get_entries_by_tag_name($tag);
+            $allEntries = get_entries_by_tag_name($tag);
+
+            $filteredEntries = array();
+            $entriesTitles = array();
+
+            foreach($allEntries as $entry) {
+                if(!in_array($entry['title'], $entriesTitles)) {
+                    array_push($entriesTitles, $entry['title']);
+                    array_push($filteredEntries, $entry);
+                }
+            }
+
+            
+            $entries = $filteredEntries;
+
         } else {
             $error_message = 'No entries found';
         }
@@ -25,7 +39,7 @@
                         echo "</div>";
                     } else {
                         echo "<div class='tag-title'>";
-                        echo  "<h2>Tag - \"" . $tag . "\"'</h2>";
+                        echo  "<h2>Tag - \"" . $tag . "\"</h2>";
                         echo "</div>";
                     }
                 ?>

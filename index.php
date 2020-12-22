@@ -7,19 +7,6 @@
         $error_message = trim(filter_input(INPUT_GET, 'msg', FILTER_SANITIZE_STRING));
     }
 
-    // When new tag form is submitted
-    if(isset($_POST['addTag']) && isset($_POST['entryId'])) {
-        $tag = filter_input(INPUT_POST, 'addTag', FILTER_SANITIZE_STRING);
-        $entry_id = filter_input(INPUT_POST, 'entryId', FILTER_SANITIZE_STRING);
-        $tag_id = add_tag($tag);
-        if($tag_id) {
-            add_entries_tags($entry_id, $tag_id);
-        } else {
-            // Error message for if tag cannot be added
-            $tag_error = 'Could not add tag';
-        }
-    }
-
     include "inc/header.php";?>
 
         <section>
@@ -53,28 +40,30 @@
 
                             // Get entry tags
                             if (!empty(get_entry_tags($entry['entry_id']))) {
+                                
+                                $tagsList = array();
 
+                                // IF DUPLICATE TAGS ARE RETURNED
+                                // Push tags to the 'tagsList' array only once
+                                foreach(get_entry_tags($entry['entry_id']) as $entry_tag) {
+                                    if(!in_array($entry_tag['tag_name'], $tagsList)) {
+                                        array_push($tagsList, $entry_tag['tag_name']);
+                                    }
+                                }
+                                
                                 // Get final tag in returned tags array, so that different formatting can be applied (no comma)
-                                $lastTag = end(get_entry_tags($entry['entry_id']));
-
+                                $lastTag = end($tagsList);
+                                
                                 echo "<p class='tags-list'>Tags:";
-                                foreach(get_entry_tags($entry['entry_id']) as $entry) {
-                                    if($entry['tag_name'] !== $lastTag['tag_name']) {
-                                        echo " <a href='tags.php?tag=" . $entry['tag_name'] . "'>" . $entry['tag_name'] . "</a>,";
+                                foreach($tagsList as $tag) {
+                                    if($tag !== $lastTag) {
+                                        echo " <a href='tags.php?tag=" . $tag . "'>" . $tag . "</a>,";
                                     } else {
-                                        echo " <a href='tags.php?tag=" . $entry['tag_name'] . "'>" . $entry['tag_name'] . "</a>";
+                                        echo " <a href='tags.php?tag=" . $tag . "'>" . $tag . "</a>";
                                     }
                                 }
                                 echo "</p>";
                             }
-
-                            // Form to add new tags
-                            echo "<form method='post' method='index.php' class='add-tags-form'>";
-                            echo "<input type='hidden' name='entryId' value='" . $entry['entry_id'] . "'>";
-                            echo "<input class='input-tags' type='text' name='addTag'>";
-                            echo "<input class='submit-tags' type='submit' value='Add Tag'><br>";
-                            echo "</form>";
-
                             echo "</article>";
                         }
                     ?>

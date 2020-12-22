@@ -22,7 +22,7 @@
     }
 
     // If delete button is submitted causing a post request, call 'delete_entry', then redirect back to index page with message
-    if(isset($_POST['delete'])) {
+    if(!empty($_POST['delete'])) {
         if(delete_entry(filter_input(INPUT_POST, 'delete', FILTER_SANITIZE_NUMBER_INT))) {
             header('Location: index.php?msg=Entry+Deleted');
             exit;
@@ -68,17 +68,31 @@
                         <div class="entry">
                             <h3>Tags: </h3>
                             <?php
-                                // Last tag in entry_tags array, change text formatting for last tag (don't add a comma and replace with full stop)
-                                $lastTag = end($entry_tags);
-                                echo "<p class='tags-list-detail'>";
-                                foreach($entry_tags as $tag) {
-                                    if($tag['tag_name'] !== $lastTag['tag_name']) {
-                                        echo " <a href='tags.php?tag=" . $tag['tag_name'] . "'>" . $tag['tag_name'] . "</a>,";
-                                    } else {
-                                        echo " <a href='tags.php?tag=" . $tag['tag_name'] . "'>" . $tag['tag_name'] . "</a>.";
+                                if(!empty($entry_tags)) {
+
+                                    $tagsList = array();
+
+                                    // IF DUPLICATE TAGS ARE RETURNED
+                                    // Push tags to the 'tagsList' array only once
+                                    foreach($entry_tags as $tag_name) {
+                                        if(!in_array($tag_name['tag_name'], $tagsList)) {
+                                            array_push($tagsList, $tag_name['tag_name']);
+                                        }
                                     }
+                                    
+                                    // Last tag in entry_tags array, change text formatting for last tag (don't add a comma and replace with full stop)
+                                    $lastTag = end($tagsList);
+
+                                    echo "<p class='tags-list-detail'>";
+                                    foreach($tagsList as $tag) {
+                                        if($tag !== $lastTag) {
+                                            echo " <a href='tags.php?tag=" . $tag . "'>" . $tag . "</a>,";
+                                        } else {
+                                            echo " <a href='tags.php?tag=" . $tag . "'>" . $tag . "</a>";
+                                        }
+                                    }
+                                    echo "</p>";
                                 }
-                                echo "</p>";
                             ?>
                         </div>
                     </article>
